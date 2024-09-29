@@ -1,2 +1,2 @@
 # xlstm_moex
-Compare performance of XLST, LSTM and ARIMA on MOEX data
+Compare performance of XLSTM, LSTM and ARIMA on MOEX data
