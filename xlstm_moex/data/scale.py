@@ -7,6 +7,7 @@ logger = init_logger(__name__)
 
 
 def std_scaler(input_seq: Iterable[Union[int, float]]) -> List[Union[int, float]]:
+    """Apply standard scaling to input sequence."""
     input_seq_mean = np.mean(input_seq)
     input_seq_std = np.std(input_seq)
 
