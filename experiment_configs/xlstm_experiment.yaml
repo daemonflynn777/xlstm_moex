@@ -1,0 +1,54 @@
+data_preproces:
+  type: nn
+  data_process_params:
+    data_filename: yndx_20150901_20200901.csv
+    value_column: OPEN
+    date_column: TRADEDATE
+    sequence_length: 50
+    scaler_type: std
+    diff_data: first_diff
+train_val_test_split:
+  test_seq_length: 50
+  val_part: 0.1
+model:
+  model_type: xlstm
+  model_params:
+    input_features: 1
+    output_features: 1
+    xlstm_config:
+      mlstm_block:
+        mlstm:
+          conv1d_kernel_size: 4
+          qkv_proj_blocksize: 4
+          num_heads: 4
+      slstm_block:
+        slstm:
+          backend: cuda # or vanilla
+          num_heads: 4
+          conv1d_kernel_size: 4
+          bias_init: powerlaw_blockdependent
+        feedforward:
+          proj_factor: 1.3
+          act_fn: gelu
+      context_length: 100
+      num_blocks: 4
+      embedding_dim: 64
+      add_post_blocks_norm: True
+      slstm_at:
+        - 1 #[1] # for [] it also works, so if no sLSTM is in the stack
+train:
+  criterion: MSE
+  num_epochs: 350
+  scheduler_params:
+    lr_warmup_steps: 50
+    lr_decay_until_steps: 350
+    lr: 0.001
+    lr_decay_factor: 0.9
+test:
+  output_filename: xlstm_predict.csv
+  criterion: MSE
+  criterion_top_k:
+    - 1
+    - 7
+    - 14
+    - 28

@@ -30,7 +30,7 @@ def nn_processor(
         value_column: str,
         date_column: str,
         sequence_length: int,
-        scaler_type: str,
+        scaler_type: str = None,
         diff_data: str = None,
         **kwargs
 ) -> Tuple[np.array, np.array]:
@@ -68,7 +68,10 @@ def nn_processor(
     if diff_data == 'first_diff_rel':
         data = first_diff_rel(data)
 
-    data_scaled = SCALERS_REGISTRY[scaler_type](data)
+    if scaler_type:
+        data_scaled = SCALERS_REGISTRY[scaler_type](data)
+    else:
+        data_scaled = data
 
     X_examples = []
     y_examples = []
@@ -82,5 +85,8 @@ def nn_processor(
     return X_examples, y_examples
 
 
-    
+PROCESSORS_REGISTRY = {
+    'nn': nn_processor,
+    'arima': arima_processor
+}    
     
