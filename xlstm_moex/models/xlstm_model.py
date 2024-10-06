@@ -40,3 +40,6 @@ class xLSTMmodel(BaseModel):
         """Init interface for xLSTMtime model.
         """
         super(xLSTMmodel).__init__(**kwargs)
+
+    def train(self, train_params: Dict[str, Any]):
+        pass
