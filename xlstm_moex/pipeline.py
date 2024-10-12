@@ -9,7 +9,6 @@ from xlstm_moex.data import (
 from xlstm_moex.models import MODELS_REGISTRY
 from xlstm_moex.utils.misc import load_experiment_config
 from xlstm_moex.utils.logging import init_logger
-from xlstm_moex.models import  MODELS_REGISTRY
 
 logger = init_logger(__name__)
 
