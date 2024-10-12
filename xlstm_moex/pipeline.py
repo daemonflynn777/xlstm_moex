@@ -2,8 +2,15 @@ import torch
 
 from typing import Any, Dict
 
-from xlstm_moex.data.process import PROCESSORS_REGISTRY
+from xlstm_moex.data import (
+    PROCESSORS_REGISTRY,
+    SPLITTERS_REGISTRY
+)
 from xlstm_moex.utils.misc import load_experiment_config
+from xlstm_moex.utils.logging import init_logger
+from xlstm_moex.models import  MODELS_REGISTRY
+
+logger = init_logger(__name__)
 
 
 class ExperimentPipeline:
@@ -22,22 +29,37 @@ class ExperimentPipeline:
             )
         
         self.device: str = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+        self.processed_data = None
         self.train_val_test_data: Dict[str, Any] = {}
         self.model = None
 
     def data_preprocess(self):
         data_processor = PROCESSORS_REGISTRY[self.pipeline_cfg['data_preproces']['type']]
-        return data_processor(**self.pipeline_cfg['data_preproces']['data_process_params'])
+        self.processed_data = data_processor(
+            **self.pipeline_cfg['data_preproces']['data_process_params']
+        )
     
-    def train_val_test_split(self, processed_data):
-        return {}
+    def train_val_test_split(self):
+        data_splitter = SPLITTERS_REGISTRY[self.pipeline_cfg['train_val_test_split']['type']]
+        self.train_val_test_data = data_splitter(
+            **self.pipeline_cfg['train_val_test_split']['train_val_test_split_params']
+        )
+
+    def init_model(self):
+        pass
 
     def run(self):
         """Run experiment."""
-        processed_data = None
 
         if 'data_preproces' in self.pipeline_cfg:
-            processed_data = self.data_preprocess
+            logger.info('Start `data_preproces` stage')
+            self.data_preprocess()
 
         if 'train_val_test_split' in self.pipeline_cfg:
-            self.train_val_test_data = self.train_val_test_split(processed_data)
+            logger.info('Start `train_val_test_split` stage')
+            self.train_val_test_split()
+        
+        if 'model' in self.pipeline_cfg:
+            logger.info('Start `init_model` stage')
+            self.init_model()
+        

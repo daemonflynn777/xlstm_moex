@@ -82,11 +82,4 @@ def nn_processor(
     y_examples = np.array(y_examples)
     logger.info(f'Number of examples is {X_examples.shape[0]}')
 
-    return X_examples, y_examples
-
-
-PROCESSORS_REGISTRY = {
-    'nn': nn_processor,
-    'arima': arima_processor
-}    
-    
+    return X_examples, y_examples   
