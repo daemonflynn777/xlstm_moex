@@ -4,7 +4,7 @@
 # https://github.com/myscience/x-lstm
 # https://coderzcolumn.com/tutorials/artificial-intelligence/pytorch-lstm-networks-for-time-series-regression-tasks
 
-from xlstm_model import xLSTMmodel
+from xlstm_moex.models.xlstm_model import xLSTMmodel
 
 
 MODELS_REGISTRY = {

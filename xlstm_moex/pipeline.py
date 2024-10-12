@@ -6,6 +6,7 @@ from xlstm_moex.data import (
     PROCESSORS_REGISTRY,
     SPLITTERS_REGISTRY
 )
+from xlstm_moex.models import MODELS_REGISTRY
 from xlstm_moex.utils.misc import load_experiment_config
 from xlstm_moex.utils.logging import init_logger
 from xlstm_moex.models import  MODELS_REGISTRY
@@ -46,7 +47,10 @@ class ExperimentPipeline:
         )
 
     def init_model(self):
-        pass
+        model = MODELS_REGISTRY[self.pipeline_cfg['model']['type']]
+        self.model = model(
+            **self.pipeline_cfg['model']['model_params']
+        )
 
     def run(self):
         """Run experiment."""
