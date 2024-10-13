@@ -39,11 +39,17 @@ model:
 train:
   criterion: MSE
   num_epochs: 350
-  scheduler_params:
-    lr_warmup_steps: 50
-    lr_decay_until_steps: 350
-    lr: 0.001
-    lr_decay_factor: 0.9
+  optimizer:
+    type: Adam
+    optimizer_params:
+      lr: 0.001
+  scheduler:
+    type: temp
+    scheduler_params:
+      lr_warmup_steps: 50
+      lr_decay_until_steps: 350
+      lr: 0.001
+      lr_decay_factor: 0.9
 test:
   output_filename: xlstm_predict.csv
   criterion: MSE

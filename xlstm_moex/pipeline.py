@@ -48,7 +48,7 @@ class ExperimentPipeline:
     def init_model(self):
         model = MODELS_REGISTRY[self.pipeline_cfg['model']['type']]
         self.model = model(
-            **self.pipeline_cfg['model']['model_params']
+            self.pipeline_cfg['model']['model_params']
         )
 
     def run(self):
