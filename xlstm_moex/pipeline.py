@@ -32,6 +32,7 @@ class ExperimentPipeline:
         self.processed_data = None
         self.train_val_test_data: Dict[str, Any] = {}
         self.model = None
+        self.predictions = None
 
     def data_preprocess(self):
         data_processor = PROCESSORS_REGISTRY[self.pipeline_cfg['data_preproces']['type']]
@@ -42,13 +43,30 @@ class ExperimentPipeline:
     def train_val_test_split(self):
         data_splitter = SPLITTERS_REGISTRY[self.pipeline_cfg['train_val_test_split']['type']]
         self.train_val_test_data = data_splitter(
+            X=self.processed_data[0],
+            y=self.processed_data[1],
             **self.pipeline_cfg['train_val_test_split']['train_val_test_split_params']
         )
 
     def init_model(self):
         model = MODELS_REGISTRY[self.pipeline_cfg['model']['type']]
         self.model = model(
-            self.pipeline_cfg['model']['model_params']
+            device=self.device,
+            model_params=self.pipeline_cfg['model']['model_params']
+        )
+
+    def train_model(self):
+        self.model.train(
+            train_params=self.pipeline_cfg['train'],
+            data=self.train_val_test_data,
+            device=self.device
+        )
+    
+    def test(self):
+        self.predictions = self.model.forecast(
+            forecast_params=self.pipeline_cfg['test'],
+            data=self.train_val_test_data,
+            device=self.device
         )
 
     def run(self):
@@ -65,4 +83,11 @@ class ExperimentPipeline:
         if 'model' in self.pipeline_cfg:
             logger.info('Start `init_model` stage')
             self.init_model()
+
+        if 'train' in self.pipeline_cfg:
+            logger.info('Start `train` stage')
+            self.train_model()
         
+        if 'test' in self.pipeline_cfg:
+            logger.info('Start `test` stage')
+            self.test()

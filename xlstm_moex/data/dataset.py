@@ -1,5 +1,6 @@
 import numpy as np
-from torch.utils.data import DataLoader, Dataset
+import torch
+from torch.utils.data import Dataset
 
 class TimeSeriesDataset(Dataset):
     """Dataset in format for neural networks:
