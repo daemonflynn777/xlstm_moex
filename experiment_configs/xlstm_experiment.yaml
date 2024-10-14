@@ -6,14 +6,14 @@ data_preproces:
     date_column: TRADEDATE
     # value_column: open
     # date_column: begin
-    sequence_length: 10
-    scaler_type: std
+    sequence_length: 75
+    scaler_type: quantile
     diff_data: first_diff
 train_val_test_split:
   type: nn
   train_val_test_split_params:
     val_part: 0.2
-    test_part: 0.05
+    test_size: 80
 model:
   type: xlstm
   model_params:
@@ -34,30 +34,30 @@ model:
         feedforward:
           proj_factor: 1.1
           act_fn: gelu
-      context_length: 10
-      num_blocks: 3
-      embedding_dim: 32
+      context_length: 75
+      num_blocks: 4
+      embedding_dim: 64
       add_post_blocks_norm: False
-      dropout: 0.3
+      dropout: 0.25
       slstm_at:
         - 1  #[1] # for [] it also works, so if no sLSTM is in the stack
 train:
   criterion: MSE
-  num_epochs: 500
+  num_epochs: 450
   shuffle_data: True
-  batch_size: 32
-  val_batch_size: 32
+  batch_size: 64
+  val_batch_size: 64
   optimizer:
     type: AdamW
     optimizer_params:
-      lr: 0.006
+      lr: 0.01
   scheduler:
     type: LinearWarmupCosineAnnealing
     scheduler_params:
       warmup_steps: 50
-      decay_until_step: 500
-      max_lr: 0.006
-      min_lr: 0.0006
+      decay_until_step: 450
+      max_lr: 0.01
+      min_lr: 0.001
 test:
   output_filename: xlstm_predict.csv
   criterion: MAE

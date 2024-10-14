@@ -21,58 +21,41 @@ from xlstm_moex.utils.logging import init_logger
 logger = init_logger(__name__)
 
 
-class xLSTMtime(nn.Module):
+class LSTMtime(nn.Module):
     def __init__(
             self,
-            input_size: int,
-            output_size: int,
-            xlstm_config: Dict[str, Any],
+            lstm_config: Dict[str, Any],
             **kwargs
     ):
-        """Init xLSTM model for time series prediction.
+        """Init LSTM model for time series prediction.
 
         Args:
             input_size: number of features in each element of input sequence.
             output_size: number of features to output for each element of input sequence.
         """
-        super(xLSTMtime, self).__init__()
-
-        block_stack_config = from_dict(
-            data_class=xLSTMBlockStackConfig,
-            data=OmegaConf.to_container(OmegaConf.create(xlstm_config)),
-            config=DaciteConfig(strict=True)
+        super(LSTMtime, self).__init__()
+        self.lstm = nn.LSTM(**lstm_config)
+        self.fc_out = nn.Linear(
+            in_features=lstm_config['hidden_size'],
+            out_features=lstm_config['input_size']
         )
-
-        # self.rnn = nn.RNN(
-        #     input_size=input_size,
-        #     hidden_size=xlstm_config['embedding_dim'],
-        #     num_layers=3,
-        #     batch_first=True
-        # )
-        self.fc_in = nn.Linear(in_features=input_size, out_features=xlstm_config['embedding_dim'])
-        self.xlstm = xLSTMBlockStack(block_stack_config)
-        self.fc_out = nn.Linear(in_features=xlstm_config['embedding_dim'], out_features=output_size)
     
     def forward(self, x):
-        # x, _ = self.rnn(x)
-        x = self.fc_in(x)
-        x = self.xlstm(x)
+        x, _ = self.lstm(x)
         x = self.fc_out(x)
         return x
     
 
-class xLSTMmodel(BaseModel):
+class LSTMmodel(BaseModel):
     def __init__(self, device: str, model_params: Dict[str, Any]):
-        """Init interface for xLSTMtime model.
+        """Init interface for LSTMtime model.
         """
-        super(xLSTMmodel).__init__()
+        super(LSTMmodel).__init__()
 
         self.device = device
         self.model_params = model_params
-        self.model = xLSTMtime(
-            input_size=model_params['input_features'],
-            output_size=model_params['output_features'],
-            xlstm_config=model_params['xlstm_config']
+        self.model = LSTMtime(
+            lstm_config=model_params
         )
 
         self.model = self.model.to(device=self.device)
@@ -190,10 +173,10 @@ class xLSTMmodel(BaseModel):
             ).item()
             top_k_losses[top_k] = {
                 'loss': top_k_loss,
-                'true': true_labels[:top_k].reshape(-1),
-                'predicted': predicted_labels[:top_k, :].reshape(-1)
+                'true': true_labels[:top_k].reshape(-1,),
+                'predicted': predicted_labels[:top_k, :].reshape(-1,)
             }
-        
+
         all_preds = self.model.forward(
             torch
             .from_numpy(data['test']['X'].astype('float32'))

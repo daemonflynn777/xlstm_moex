@@ -1,5 +1,5 @@
 import numpy as np
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, QuantileTransformer
 from typing import Iterable, List, Union
 
 from xlstm_moex.utils.logging import init_logger
@@ -18,6 +18,7 @@ def std_scaler(input_seq: Iterable[Union[int, float]]) -> List[Union[int, float]
         (el - input_seq_mean)/input_seq_std for el in input_seq
     ]
 
+
 def min_max_scaler(input_seq: Iterable[Union[int, float]]) -> List[Union[int, float]]:
     scaler = MinMaxScaler()
     fitted_scaler = scaler.fit([[el] for el in input_seq])
@@ -26,7 +27,18 @@ def min_max_scaler(input_seq: Iterable[Union[int, float]]) -> List[Union[int, fl
     print(scaled_data)
     return scaled_data
 
+
+def quantile_scaler(input_seq: Iterable[Union[int, float]]) -> List[Union[int, float]]:
+    scaler = QuantileTransformer()
+    fitted_scaler = scaler.fit([[el] for el in input_seq])
+    scaled_data = fitted_scaler.transform([[el] for el in input_seq]).reshape(-1,)
+    print(type(scaled_data))
+    print(scaled_data)
+    return scaled_data
+
+
 SCALERS_REGISTRY = {
     'std': std_scaler,
-    'min_max': min_max_scaler
+    'min_max': min_max_scaler,
+    'quantile': quantile_scaler
 }

@@ -8,35 +8,52 @@ from xlstm_moex.utils.logging import init_logger
 logger = init_logger(__name__)
 
 
-def arima_splitter():
-    pass
+def arima_splitter(
+        X: np.array,
+        test_size: int = 0,
+        **kwargs,
+    ) -> Dict[str, Dict[str, np.array]]:
+    """Split data into train, validation and test sets for use with arima"""
+    num_examples = X.shape[0]
+    X_test = X[num_examples-test_size:num_examples]
+    X_train = X[:num_examples-test_size]
+
+    print(X_test[-5:])
+
+    return {
+        'train': {
+            'X': X_train, 'y': X_train
+        },
+        'test': {
+            'X': X_test, 'y': X_test
+        }
+    }
 
 
 def nn_splitter(
         X: np.array,
         y: np.array,
         val_part: float = 0.0,
-        test_part: float = 0.0,
+        test_size: int = 0,
         random_state: int = 666,
         **kwargs,
     ) -> Dict[str, Dict[str, np.array]]:
     """Split data into train, validation and test sets."""
-    train_part = 1.0 - val_part - test_part
+    num_examples = X.shape[0]
+    X_test = X[num_examples-test_size:num_examples,:]
+    y_test = y[num_examples-test_size:num_examples,:]
 
-    X_train, X_rest, y_train, y_rest = train_test_split(
-        X,
-        y,
-        train_size=train_part,
-        random_state=random_state,
-        shuffle=True
-    )
+    print(y_test[-5:, -1])
 
-    X_val, X_test, y_val, y_test = train_test_split(
+    X_rest = X[:num_examples-test_size,:]
+    y_rest = y[:num_examples-test_size,:]
+
+    X_train, X_val, y_train, y_val = train_test_split(
         X_rest,
         y_rest,
-        train_size=val_part/(val_part+test_part),
+        train_size=1 - val_part,
         random_state=random_state,
-        shuffle=False
+        shuffle=True
     )
 
     logger.info(f'Shape of train is {X_train.shape}')

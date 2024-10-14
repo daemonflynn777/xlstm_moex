@@ -1,0 +1,41 @@
+data_preproces:
+  type: arima
+  data_process_params:
+    data_filename: data/train/yndx_20150901_20200901.csv
+    value_column: OPEN
+    date_column: TRADEDATE
+    # value_column: open
+    # date_column: begin
+    scaler_type: quantile
+    diff_data: first_diff
+train_val_test_split:
+  type: arima
+  train_val_test_split_params:
+    val_part: 0.2
+    test_size: 80
+model:
+  type: arima
+  model_params:
+    stationary: False
+    n_jobs: -1
+    suppress_warnings: True
+    out_of_sample_size: 28
+    max_order: 15
+    seasonal: False
+    n_fits: 200
+    maxiter: 1000
+    trace: True
+    with_intercept: False
+    # max_p: 10
+    # max_q: 10
+    # enforce_stationarity: False
+    # random: True
+train:
+test:
+  output_filename: arima_predict.csv
+  criterion: MAE
+  criterion_top_k:
+    - 1
+    - 7
+    - 14
+    - 28

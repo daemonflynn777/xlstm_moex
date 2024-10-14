@@ -21,8 +21,41 @@ def first_diff_rel(input_seq: Iterable[Union[int, float]]) -> List[Union[int, fl
     ]
 
 
-def arima_processor(data_filename: str, **kwargs) -> pd.DataFrame:
-    pass
+def arima_processor(
+        data_filename: str,
+        value_column: str,
+        date_column: str,
+        scaler_type: str = None,
+        diff_data: str = None,
+        **kwargs
+    ) -> pd.DataFrame:
+    logger.info(
+        'Start applying `nn` processing to input data, '
+        f'data_filename={data_filename}, '
+        f'scaler_type={scaler_type}'
+    )
+    data = (
+        pd
+        .read_csv(data_filename)
+        .sort_values(by=[date_column], ascending=[True])
+        [value_column]
+        .to_list()
+    )
+    if diff_data is not None:
+        logger.info(f'Will convert data to `{diff_data}`')
+    if diff_data == 'first_diff':
+        data = first_diff(data)
+    if diff_data == 'first_diff_rel':
+        data = first_diff_rel(data)
+
+    if scaler_type:
+        data_scaled = SCALERS_REGISTRY[scaler_type](data)
+    else:
+        data_scaled = data
+
+    print(data_scaled[-5:])
+    
+    return np.array(data_scaled), np.array(data_scaled)
 
 
 def nn_processor(
@@ -73,11 +106,14 @@ def nn_processor(
     else:
         data_scaled = data
 
+    print(data_scaled[-5:])
+
     X_examples = []
     y_examples = []
-    for i in range(len(data_scaled) - sequence_length - 1):
+    for i in range(len(data_scaled) - sequence_length):
         X_examples.append(data_scaled[i:i+sequence_length])
-        y_examples.append(data_scaled[i+sequence_length])
+        # y_examples.append(data_scaled[i+sequence_length])
+        y_examples.append(data_scaled[i+1:i+sequence_length+1])
     X_examples = np.array(X_examples)
     y_examples = np.array(y_examples)
     logger.info(f'Number of examples is {X_examples.shape[0]}')

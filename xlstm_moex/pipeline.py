@@ -1,3 +1,5 @@
+import numpy as np
+import random
 import torch
 
 from typing import Any, Dict
@@ -33,6 +35,12 @@ class ExperimentPipeline:
         self.train_val_test_data: Dict[str, Any] = {}
         self.model = None
         self.predictions = None
+
+        # set seed for reproducibility
+        # seed = 666
+        # torch.manual_seed(seed)
+        # random.seed(seed)
+        # np.random.seed(seed)
 
     def data_preprocess(self):
         data_processor = PROCESSORS_REGISTRY[self.pipeline_cfg['data_preproces']['type']]

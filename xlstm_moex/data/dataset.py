@@ -20,10 +20,17 @@ class TimeSeriesDataset(Dataset):
             .to(device=device)
             .reshape(-1, seq_lenght , 1)
         )  # shape is (num_examples, seq_lenght, in_features) 
-        self.y = torch.from_numpy(y.astype('float32')).to(device=device)
+        # self.y = torch.from_numpy(y.astype('float32')).to(device=device)
+        self.y = (
+            torch
+            .from_numpy(y.astype('float32'))
+            .to(device=device)
+            .reshape(-1, seq_lenght , 1)
+        )  # shape is (num_examples, seq_lenght, in_features) 
 
     def __len__(self):
         return len(self.X)
     
     def __getitem__(self, index):
-        return self.X[index], self.y[index].unsqueeze(0)
+        # return self.X[index], self.y[index].unsqueeze(0)
+        return self.X[index], self.y[index]
