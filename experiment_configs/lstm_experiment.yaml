@@ -24,7 +24,7 @@ model:
     dropout: 0.3
 train:
   criterion: MSE
-  num_epochs: 1000
+  num_epochs: 700
   shuffle_data: True
   batch_size: 64
   val_batch_size: 64
@@ -36,7 +36,7 @@ train:
     type: LinearWarmupCosineAnnealing
     scheduler_params:
       warmup_steps: 50
-      decay_until_step: 1000
+      decay_until_step: 700
       max_lr: 0.02
       min_lr: 0.002
 test:

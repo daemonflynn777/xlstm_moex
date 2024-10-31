@@ -16,11 +16,11 @@ train_val_test_split:
 model:
   type: arima
   model_params:
-    stationary: False
+    stationary: True
     n_jobs: -1
     suppress_warnings: True
     out_of_sample_size: 28
-    max_order: 15
+    max_order: 10
     seasonal: False
     n_fits: 200
     maxiter: 1000

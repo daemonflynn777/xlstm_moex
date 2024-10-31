@@ -20,7 +20,7 @@ def std_scaler(input_seq: Iterable[Union[int, float]]) -> List[Union[int, float]
 
 
 def min_max_scaler(input_seq: Iterable[Union[int, float]]) -> List[Union[int, float]]:
-    scaler = MinMaxScaler()
+    scaler = MinMaxScaler(feature_range=(-1, 1))
     fitted_scaler = scaler.fit([[el] for el in input_seq])
     scaled_data = fitted_scaler.transform([[el] for el in input_seq]).reshape(-1,)
     print(type(scaled_data))

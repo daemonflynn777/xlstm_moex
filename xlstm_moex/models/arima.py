@@ -37,9 +37,6 @@ class ARIMAmodel(BaseModel):
 
         criterion = LOSSES_REGISTRY[forecast_params['criterion']]
 
-        print(true_labels)
-        print(predicted_labels)
-
         top_k_losses = {}
         for top_k in forecast_params['criterion_top_k']:
             top_k_loss = criterion(
@@ -51,4 +48,14 @@ class ARIMAmodel(BaseModel):
                 'true': true_labels[:top_k],
                 'predicted': predicted_labels[:top_k]
             }
+        all_loss = criterion(
+            torch.from_numpy(predicted_labels.reshape(-1, 1)),
+            torch.from_numpy(true_labels.reshape(-1, 1))
+        ).item()
+        top_k_losses['all'] = {
+            'loss': all_loss,
+            'true': true_labels,
+            'predicted': predicted_labels
+
+        }
         return top_k_losses
