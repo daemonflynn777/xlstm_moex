@@ -149,6 +149,7 @@ class LSTMmodel(BaseModel):
             .reshape(-1, data['test']['X'].shape[1], 1)
         )
         true_labels = data['test']['y'][:, -1]
+        # true_labels = data['test']['y']
         predicted_labels = []
 
         batch_size, seq_len, in_features = start_state.shape

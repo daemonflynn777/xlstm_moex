@@ -42,11 +42,13 @@ def nn_splitter(
     num_examples = X.shape[0]
     X_test = X[num_examples-test_size:num_examples,:]
     y_test = y[num_examples-test_size:num_examples,:]
+    # y_test = y[num_examples-test_size:num_examples]
 
-    print(y_test[-5:, -1])
+    # print(y_test[-5:, -1])
 
     X_rest = X[:num_examples-test_size,:]
     y_rest = y[:num_examples-test_size,:]
+    # y_rest = y[:num_examples-test_size]
 
     X_train, X_val, y_train, y_val = train_test_split(
         X_rest,

@@ -1,0 +1,49 @@
+data_preproces:
+  type: nn
+  data_process_params:
+    data_filename: data/train/yndx_20150901_20200901.csv
+    value_column: OPEN
+    date_column: TRADEDATE
+    # value_column: open
+    # date_column: begin
+    sequence_length: 75
+    scaler_type: min_max
+    # diff_data: first_diff
+train_val_test_split:
+  type: nn
+  train_val_test_split_params:
+    val_part: 0.2
+    test_size: 80
+model:
+  type: lstm
+  model_params:
+    input_size: 1
+    hidden_size: 32
+    num_layers: 2
+    batch_first: True
+    dropout: 0.55
+train:
+  criterion: MSE
+  num_epochs: 100
+  shuffle_data: True
+  batch_size: 64
+  val_batch_size: 64
+  optimizer:
+    type: AdamW
+    optimizer_params:
+      lr: 0.02
+  scheduler:
+    type: LinearWarmupCosineAnnealing
+    scheduler_params:
+      warmup_steps: 25
+      decay_until_step: 100
+      max_lr: 0.02
+      min_lr: 0.002
+test:
+  output_filename: xlstm_predict.csv
+  criterion: MAE
+  criterion_top_k:
+    - 1
+    - 7
+    - 14
+    - 28
